@@ -1,0 +1,1 @@
+var json_DaerahRawanBencana_4 = {"type":"FeatureCollection","name":"DaerahRawanBencana_4","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"REMARK":"Daerah Rawan Bencana","RAWAN":"Longsor"},"geometry":{"type":"Point","coordinates":[112.549638961408675,-8.084995364706081]}}]}

@@ -1,0 +1,1 @@
+var json_BalaiDesa_8 = {"type":"FeatureCollection","name":"BalaiDesa_8","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"REMARK":"Balai Desa","NAMA":"Balai Pertemuan Rakyat Desa Ngasem"},"geometry":{"type":"Point","coordinates":[112.5539454,-8.1177801]}}]}

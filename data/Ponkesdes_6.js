@@ -1,0 +1,1 @@
+var json_Ponkesdes_6 = {"type":"FeatureCollection","name":"Ponkesdes_6","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"REMARK":"Pusat Kesehatan","NAMA":"Ponkesdes Ngasem"},"geometry":{"type":"Point","coordinates":[112.554788307775269,-8.09314356883044]}}]}
