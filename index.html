@@ -176,24 +176,24 @@
 <script src="data/KantorPemerintahan_11.js"></script>
 
 <script>
-  // Inisialisasi Map
-  var map = L.map('map', { zoomControl: true, maxZoom: 28, minZoom: 1 });
+  var map = L.map('map', { zoomControl: true, maxZoom: 22, minZoom: 1 });
+  map.on('zoomend', function() { layer_ngasem_1.bringToFront(); });
 
   var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
 
-  // Basemap Tile
-  map.createPane('pane_OSMStandard_0');
-  map.getPane('pane_OSMStandard_0').style.zIndex = 400;
-  var layer_OSMStandard_0 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      pane: 'pane_OSMStandard_0',
-      opacity: 1.0,
+  map.createPane('pane_tiles'); map.getPane('pane_tiles').style.zIndex = 350;
+  map.createPane('pane_outline'); map.getPane('pane_outline').style.zIndex = 410;
+  map.createPane('pane_roads'); map.getPane('pane_roads').style.zIndex = 420;
+  map.createPane('pane_points'); map.getPane('pane_points').style.zIndex = 500;
+
+  var layer_OSMStandard_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      pane: 'pane_tiles',
       attribution: '&copy; OpenStreetMap · MMD FILKOM UB',
-      minZoom: 1, maxZoom: 28
+      maxZoom: 19
   }).addTo(map);
 
-  // Styling Functions
-  function style_ngasem_1_0() { return { opacity: 1, color: '#0f766e', weight: 3, fill: true, fillOpacity: 0.12, fillColor: '#0f766e', dashArray: '8 4' }; }
-  function style_Jalan_2_0() { return { opacity: 0.7, color: '#334155', weight: 2 }; }
+  function style_ngasem_1_0() { return { pane: 'pane_outline', opacity: 1, color: '#0f766e', weight: 3, fill: true, fillOpacity: 0.18, fillColor: '#0f766e', dashArray: '10 6' }; }
+  function style_Jalan_2_0() { return { pane: 'pane_roads', opacity: 0.85, color: '#1e293b', weight: 2 }; }
 
   // Generic popup builder
   function buildPopup(props) {
@@ -207,33 +207,32 @@
     return out;
   }
 
-  // Load geojson layers
   var layer_ngasem_1 = new L.geoJson(json_ngasem_1, {
+    pane: 'pane_outline',
     style: style_ngasem_1_0,
+    interactive: true,
     onEachFeature: function(feature, layer) {
       var p = feature.properties;
-      layer.bindPopup('<strong>' + (p.NAME_4 || 'Desa Ngasem') + '</strong><br><small>' + (p.TYPE_4 || 'Desa') + ' · ' + (p.NAME_3 || '') + ', ' + (p.NAME_2 || '') + '</small>');
-      layer.on('mouseover', function(e) { e.target.setStyle({ fillOpacity: 0.28, weight: 4 }); });
+      layer.bindPopup('<strong>' + (p.NAME_4 || 'Desa Ngasem') + '</strong><br><small>' + (p.TYPE_4 || 'Desa') + ' \u00b7 ' + (p.NAME_3 || '') + ', ' + (p.NAME_2 || '') + '</small>');
+      layer.on('mouseover', function(e) { e.target.setStyle({ fillOpacity: 0.30, weight: 4, dashArray: null }); });
       layer.on('mouseout', function(e) { layer_ngasem_1.resetStyle(e.target); });
     }
   }).addTo(map);
-  var layer_Jalan_2 = new L.geoJson(json_Jalan_2, { style: style_Jalan_2_0 }).addTo(map);
+  layer_ngasem_1.bringToFront();
+  var layer_Jalan_2 = new L.geoJson(json_Jalan_2, { pane: 'pane_roads', style: style_Jalan_2_0, interactive: false }).addTo(map);
 
-  if (layer_ngasem_1.getBounds().isValid()) map.fitBounds(layer_ngasem_1.getBounds());
-  else map.setView([-8.091, 112.552], 14);
+  if (layer_ngasem_1.getBounds().isValid()) map.fitBounds(layer_ngasem_1.getBounds().pad(0.08));
 
-  // Helper point layer
   function createPointLayer(data, color, size) {
     return new L.geoJson(data, {
+      pane: 'pane_points',
       pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, {
           radius: size || 5, fill: true, fillColor: color,
-          color: '#ffffff', weight: 2, opacity: 1, fillOpacity: 0.9
+          color: '#ffffff', weight: 2, opacity: 1, fillOpacity: 0.95, pane: 'pane_points'
         });
       },
-      onEachFeature: function (feature, layer) {
-        layer.bindPopup(buildPopup(feature.properties));
-      }
+      onEachFeature: function (feature, layer) { layer.bindPopup(buildPopup(feature.properties)); }
     });
   }
 
