@@ -114,11 +114,11 @@
     <div class="brand-text">
       <div class="kicker">MMD FILKOM UB 2024 · Peta Tematik</div>
       <h1 class="title">Map Digital Desa Ngasem</h1>
-      <div class="sub">Kecamatan Ngasem, Bojonegoro</div>
+      <div class="sub">Kecamatan Ngajum, Kabupaten Malang</div>
     </div>
   </div>
   <div class="meta">
-    <span>Platform: <strong>QGIS + Leaflet</strong></span>
+    <span>Wilayah: <strong>Desa Ngasem</strong></span>
     <span>·</span>
     <a href="https://github.com/midas79/Map-Digital-Desa-Ngasem" target="_blank">Repo GitHub ↗</a>
   </div>
@@ -182,8 +182,8 @@
   var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
 
   map.createPane('pane_tiles'); map.getPane('pane_tiles').style.zIndex = 350;
-  map.createPane('pane_outline'); map.getPane('pane_outline').style.zIndex = 410;
-  map.createPane('pane_roads'); map.getPane('pane_roads').style.zIndex = 420;
+  map.createPane('pane_roads'); map.getPane('pane_roads').style.zIndex = 430;
+  map.createPane('pane_outline'); map.getPane('pane_outline').style.zIndex = 450;
   map.createPane('pane_points'); map.getPane('pane_points').style.zIndex = 500;
 
   var layer_OSMStandard_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -192,8 +192,8 @@
       maxZoom: 19
   }).addTo(map);
 
-  function style_ngasem_1_0() { return { pane: 'pane_outline', opacity: 1, color: '#0f766e', weight: 3, fill: true, fillOpacity: 0.18, fillColor: '#0f766e', dashArray: '10 6' }; }
-  function style_Jalan_2_0() { return { pane: 'pane_roads', opacity: 0.85, color: '#1e293b', weight: 2 }; }
+  function style_ngasem_1_0() { return { pane: 'pane_outline', opacity: 1, color: '#115e59', weight: 4, fill: true, fillOpacity: 0.22, fillColor: '#14b8a6', dashArray: null }; }
+  function style_Jalan_2_0() { return { pane: 'pane_roads', opacity: 0.9, color: '#1e293b', weight: 2.5 }; }
 
   // Generic popup builder
   function buildPopup(props) {
