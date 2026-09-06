@@ -177,8 +177,7 @@
 
 <script>
   // Inisialisasi Map
-  var map = L.map('map', { zoomControl: true, maxZoom: 28, minZoom: 1 })
-             .fitBounds([[-8.120334528299967,112.50613080135614],[-8.065944767699929,112.5968431356441]]);
+  var map = L.map('map', { zoomControl: true, maxZoom: 28, minZoom: 1 });
 
   var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
 
@@ -193,8 +192,8 @@
   }).addTo(map);
 
   // Styling Functions
-  function style_ngasem_1_0() { return { opacity: 1, color: 'rgba(35,35,35,0.35)', weight: 2, fill: true, fillOpacity: 0.15, fillColor: 'rgba(15,118,110,0.4)' }; }
-  function style_Jalan_2_0() { return { opacity: 1, color: '#64748b', weight: 1.5 }; }
+  function style_ngasem_1_0() { return { opacity: 1, color: '#0f766e', weight: 3, fill: true, fillOpacity: 0.12, fillColor: '#0f766e', dashArray: '8 4' }; }
+  function style_Jalan_2_0() { return { opacity: 0.7, color: '#334155', weight: 2 }; }
 
   // Generic popup builder
   function buildPopup(props) {
@@ -209,8 +208,19 @@
   }
 
   // Load geojson layers
-  var layer_ngasem_1 = new L.geoJson(json_ngasem_1, { style: style_ngasem_1_0 }).addTo(map);
+  var layer_ngasem_1 = new L.geoJson(json_ngasem_1, {
+    style: style_ngasem_1_0,
+    onEachFeature: function(feature, layer) {
+      var p = feature.properties;
+      layer.bindPopup('<strong>' + (p.NAME_4 || 'Desa Ngasem') + '</strong><br><small>' + (p.TYPE_4 || 'Desa') + ' · ' + (p.NAME_3 || '') + ', ' + (p.NAME_2 || '') + '</small>');
+      layer.on('mouseover', function(e) { e.target.setStyle({ fillOpacity: 0.28, weight: 4 }); });
+      layer.on('mouseout', function(e) { layer_ngasem_1.resetStyle(e.target); });
+    }
+  }).addTo(map);
   var layer_Jalan_2 = new L.geoJson(json_Jalan_2, { style: style_Jalan_2_0 }).addTo(map);
+
+  if (layer_ngasem_1.getBounds().isValid()) map.fitBounds(layer_ngasem_1.getBounds());
+  else map.setView([-8.091, 112.552], 14);
 
   // Helper point layer
   function createPointLayer(data, color, size) {
