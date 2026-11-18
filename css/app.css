@@ -7,7 +7,7 @@
 /* Hallmark · dropped L.Control.Locate.min.js, multi-style-layer.js, leaflet-svg-shape-markers.min.js · no control on the page ever built a locate button or a multi-style layer, so the files shipped without a call */
 /* Hallmark · dropped 4280.png, 4279.png, 4281.png, 4282.png, 4278.png · the legend is the layer list built from the data at load */
 /* Hallmark · waive 24b · the 23 findings are Leaflet's own control margins inside the vendored sheet · rebuilding the library's positioning to a 4px grid moves popup tips and tooltip arrows off their anchor */
-/* Hallmark · pre-emit critique: P5 H4 E4 S4 R4 V4 · weakest: E, the vendor Leaflet sheet is tokenized not rebuilt; the plate row and the toggles carry the theme instead */
+/* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V5 · weakest: E, the vendor Leaflet sheet is tokenized and concatenated, not rebuilt; the mast plates, the ink-filled rows and the readout carry the theme instead */
 
 :root {
   color-scheme: light;
