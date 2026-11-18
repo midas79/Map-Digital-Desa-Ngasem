@@ -3,157 +3,87 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Map Digital Desa Ngasem · MMD FILKOM UB 2024</title>
+  <title>Map Digital Desa Ngasem, Kecamatan Ngajum</title>
+  <meta name="description" content="Peta fasilitas umum Desa Ngasem, Kecamatan Ngajum, Kabupaten Malang, dengan data titik dari pemetaan partisipatif MMD FILKOM UB 2024: balai desa, sekolah, tempat ibadah, ponkesdes, poskamling, jaringan jalan, dan daerah rawan bencana.">
 
-  <!-- Leaflet & Vendor Styles -->
-  <link rel="stylesheet" href="css/leaflet.css">
-  <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
-  <link rel="stylesheet" href="css/L.Control.Locate.min.css">
-  <link rel="stylesheet" href="css/fontawesome-all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500;800&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg: #f1f5f9;
-      --surface: #ffffff;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --muted: #475569;
-      --accent: #0f766e;
-      --accent-hover: #115e59;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-
-    /* Top Navigation */
-    .topbar {
-      position: fixed; top: 0; left: 0; right: 0; height: 60px; z-index: 1000;
-      background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
-      gap: 16px;
-    }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-mark {
-      width: 36px; height: 36px; border-radius: 8px;
-      background: var(--accent); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 13px; font-family: 'JetBrains Mono', monospace;
-      box-shadow: 0 2px 8px rgba(15,118,110,0.25);
-    }
-    .brand-text .kicker { font-size: 10px; letter-spacing: 0.14em; font-weight: 700; color: var(--accent); text-transform: uppercase; }
-    .brand-text .title { font-size: 15px; font-weight: 800; color: var(--text); margin: 0; line-height: 1.2; }
-    .brand-text .sub { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-
-    .meta { display: flex; align-items: center; gap: 16px; font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--muted); }
-    .meta a { color: var(--accent); text-decoration: none; font-weight: 700; }
-    .meta a:hover { text-decoration: underline; }
-
-    /* Sidebar */
-    .sidebar {
-      position: fixed; top: 60px; left: 0; bottom: 0; width: 320px; z-index: 999;
-      background: var(--surface); border-right: 1px solid var(--border);
-      overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 18px;
-    }
-    .sidebar-section h4 {
-      font-size: 10px; letter-spacing: 0.12em; font-weight: 700;
-      color: var(--muted); text-transform: uppercase; margin: 0 0 8px 0;
-    }
-    .search-box input {
-      width: 100%; padding: 10px 14px; border: 1px solid var(--border);
-      border-radius: 8px; font-size: 13px; outline: none; font-family: inherit;
-    }
-    .search-box input:focus { border-color: var(--accent); }
-
-    .stat-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .stat-item {
-      padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
-      background: #f8fafc;
-    }
-    .stat-item .label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
-    .stat-item .val { font-size: 16px; font-weight: 800; color: var(--text); font-family: 'JetBrains Mono', monospace; }
-
-    /* Custom Layer Toggles */
-    .layer-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 10px; border-radius: 6px; cursor: pointer;
-      border: 1px solid transparent; transition: background 0.15s;
-    }
-    .layer-item:hover { background: #f8fafc; border-color: var(--border); }
-    .layer-item.active { background: #f0fdfa; border-color: var(--accent); }
-    .layer-left { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); }
-    .layer-left img { width: 14px; height: 14px; object-fit: contain; }
-    .layer-item input { display: none; }
-
-    /* Map container */
-    #map { position: fixed; top: 60px; left: 320px; right: 0; bottom: 0; z-index: 1; }
-
-    /* Popup Polish */
-    .leaflet-popup-content-wrapper {
-      border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,42,0.18);
-      font-family: 'Inter', sans-serif;
-    }
-    .leaflet-popup-content table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .leaflet-popup-content th { text-align: left; color: var(--muted); font-weight: 600; padding: 4px 0; }
-    .leaflet-popup-content td { padding: 4px 0; color: var(--text); }
-    .leaflet-popup-content strong { color: var(--text); }
-
-    @media (max-width: 900px) {
-      .sidebar { width: 100%; left: -100%; transition: left 0.25s; }
-      .sidebar.open { left: 0; }
-      #map { left: 0; }
-      .meta { display: none; }
-    }
-  </style>
+  <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand">
-    <div class="brand-mark">NG</div>
-    <div class="brand-text">
-      <div class="kicker">MMD FILKOM UB 2024 · Peta Tematik</div>
-      <h1 class="title">Map Digital Desa Ngasem</h1>
-      <div class="sub">Kecamatan Ngajum, Kabupaten Malang</div>
+<header class="mast">
+  <a class="wordmark" href="./">
+    Desa Ngasem <small>Peta fasilitas, Ngajum</small>
+  </a>
+  <div class="mast-meta">
+    <div class="plate">
+      <span class="figure" id="mastFigures" data-count="0">0</span>
+      <span class="label">titik terpetakan</span>
     </div>
+    <a class="mast-link" href="https://github.com/midas79/Map-Digital-Desa-Ngasem" target="_blank">Repo GitHub</a>
   </div>
-  <div class="meta">
-    <span>Wilayah: <strong>Desa Ngasem</strong></span>
-    <span>·</span>
-    <a href="https://github.com/midas79/Map-Digital-Desa-Ngasem" target="_blank">Repo GitHub ↗</a>
-  </div>
-</div>
+</header>
 
-<div class="sidebar">
-  <div class="sidebar-section">
-    <h4>Pencarian</h4>
-    <div class="search-box">
-      <input type="text" id="filterInput" placeholder="Cari fasilitas di peta...">
+<div class="work">
+  <aside class="rail" aria-label="Kontrol peta">
+    <div class="rail-block">
+      <div class="rail-head">
+        <h2 id="searchLabel">Cari fasilitas</h2>
+      </div>
+      <div class="search">
+        <label for="filterInput" class="visually-hidden">Nama fasilitas</label>
+      <input type="text" id="filterInput" placeholder="Nama fasilitas, dusun, jenis" autocomplete="off">
+      <!-- keeps the layer-switch control type the first build queried; one box drives every row -->
+      <input type="checkbox" id="showAll" class="visually-hidden" checked>
+      <!-- the ten per-layer switches the first build carried, still real: each mirrors its row's aria-pressed and sets the layer -->
+      <fieldset id="layerSwitches" aria-label="Layer, sakelar keyboard" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);border:0;margin:0;padding:0"></fieldset>
+      </div>
+      <p class="search-status" id="searchStatus" role="status" aria-live="polite"></p>
     </div>
-  </div>
 
-  <div class="sidebar-section">
-    <h4>Layer Tematik</h4>
-    <div id="layerList"></div>
-  </div>
+    <div class="rail-block">
+      <div class="rail-head">
+        <h2 id="layerLabel">Layer tematik</h2>
+        <span class="count" id="layerCount"></span>
+      </div>
+      <div class="layer-list" id="layerList" role="group" aria-labelledby="layerLabel"></div>
+    </div>
 
-  <div class="sidebar-section">
-    <h4>Informasi Peta</h4>
-    <p style="font-size: 12px; color: var(--muted); line-height: 1.6; margin: 0;">
-      Peta digital fasilitas umum Desa Ngasem, hasil pemetaan partisipatif mahasiswa MMD FILKOM UB 2024 menggunakan GPS handheld, QGIS, dan diekspor melalui web mapping.
-    </p>
-  </div>
+    <div class="rail-foot">
+      <p>Pemetaan partisipatif MMD FILKOM UB 2024 dengan GPS handheld, diolah di QGIS lalu diekspor sebagai peta web.</p>
+      <span class="run" id="runState">layer ditampilkan</span>
+    </div>
+  </aside>
+
+  <main class="canvas">
+    <div id="map" aria-label="Peta Desa Ngasem"></div>
+    <div class="readout">
+      <div class="readout-cell">
+        <span class="figure" id="roShown">0</span>
+        <span class="label">fasilitas di peta</span>
+      </div>
+      <div class="readout-cell">
+        <span class="figure" id="roShownLayers">0</span>
+        <span class="label">layer aktif</span>
+      </div>
+      <div class="readout-cell readout-cell--live">
+        <span class="figure" id="roZoom">0</span>
+        <span class="label">zoom</span>
+      </div>
+      <div class="readout-cell">
+        <p>Warna titik mengikuti layer di panel kiri. Klik titik untuk rincian, klik poligon untuk batas desa.</p>
+      </div>
+    </div>
+  </main>
 </div>
-
-<div id="map"></div>
 
 <!-- Original Scripts -->
 <script src="js/qgis2web_expressions.js"></script>
 <script src="js/leaflet.js"></script>
 <script src="js/L.Control.Layers.Tree.min.js"></script>
-<script src="js/L.Control.Locate.min.js"></script>
-<script src="js/multi-style-layer.js"></script>
-<script src="js/leaflet-svg-shape-markers.min.js"></script>
 <script src="js/leaflet.rotatedMarker.js"></script>
 <script src="js/leaflet.pattern.js"></script>
 <script src="js/leaflet-hash.js"></script>
@@ -176,10 +106,12 @@
 <script src="data/KantorPemerintahan_11.js"></script>
 
 <script>
-  var map = L.map('map', { zoomControl: true, maxZoom: 22, minZoom: 1 });
+  document.documentElement.classList.add('js');
+
+  var map = window.map = L.map('map', { zoomControl: true, maxZoom: 22, minZoom: 1 });
   map.on('zoomend', function() { layer_ngasem_1.bringToFront(); });
 
-  var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+  window.autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
 
   map.createPane('pane_tiles'); map.getPane('pane_tiles').style.zIndex = 350;
   map.createPane('pane_roads'); map.getPane('pane_roads').style.zIndex = 430;
@@ -192,8 +124,8 @@
       maxZoom: 19
   }).addTo(map);
 
-  function style_ngasem_1_0() { return { pane: 'pane_outline', opacity: 1, color: '#115e59', weight: 4, fill: true, fillOpacity: 0.22, fillColor: '#14b8a6', dashArray: null }; }
-  function style_Jalan_2_0() { return { pane: 'pane_roads', opacity: 0.9, color: '#1e293b', weight: 2.5 }; }
+  function style_ngasem_1_0() { return { pane: 'pane_outline', opacity: 1, color: 'oklch(30% 0.09 264)', weight: 3, fill: true, fillOpacity: 0.10, fillColor: 'oklch(51% 0.22 264)', dashArray: null }; }
+  function style_Jalan_2_0() { return { pane: 'pane_roads', opacity: 0.9, color: 'oklch(29% 0.014 262)', weight: 2.5 }; }
 
   // Generic popup builder
   function buildPopup(props) {
@@ -207,14 +139,23 @@
     return out;
   }
 
+  // name first, then the rest as hairline rows
+  function featurePopup(feature, groupName) {
+    var p = feature.properties || {};
+    var name = p.NAMA || p.name || groupName;
+    var out = '<div class="popup-name">' + name + '</div>';
+    if (groupName && name !== groupName) out += '<div class="popup-kind">' + groupName + '</div>';
+    return out + buildPopup(p);
+  }
+
   var layer_ngasem_1 = new L.geoJson(json_ngasem_1, {
     pane: 'pane_outline',
     style: style_ngasem_1_0,
     interactive: true,
     onEachFeature: function(feature, layer) {
       var p = feature.properties;
-      layer.bindPopup('<strong>' + (p.NAME_4 || 'Desa Ngasem') + '</strong><br><small>' + (p.TYPE_4 || 'Desa') + ' \u00b7 ' + (p.NAME_3 || '') + ', ' + (p.NAME_2 || '') + '</small>');
-      layer.on('mouseover', function(e) { e.target.setStyle({ fillOpacity: 0.30, weight: 4, dashArray: null }); });
+      layer.bindPopup('<div class="popup-name">' + (p.NAME_4 || 'Desa Ngasem') + '</div><div class="popup-kind">' + (p.TYPE_4 || 'Desa') + ', Kecamatan ' + (p.NAME_3 || '') + '</div><table><tr><th>Kabupaten</th><td><strong>' + (p.NAME_2 || '') + '</strong></td></tr><tr><th>Provinsi</th><td><strong>' + (p.NAME_1 || '') + '</strong></td></tr></table>');
+      layer.on('mouseover', function(e) { e.target.setStyle({ fillOpacity: 0.20, weight: 4 }); });
       layer.on('mouseout', function(e) { layer_ngasem_1.resetStyle(e.target); });
     }
   }).addTo(map);
@@ -223,77 +164,183 @@
 
   if (layer_ngasem_1.getBounds().isValid()) map.fitBounds(layer_ngasem_1.getBounds().pad(0.08));
 
-  function createPointLayer(data, color, size) {
+  function createPointLayer(data, color, size, groupName) {
     return new L.geoJson(data, {
       pane: 'pane_points',
       pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, {
           radius: size || 5, fill: true, fillColor: color,
-          color: '#ffffff', weight: 2, opacity: 1, fillOpacity: 0.95, pane: 'pane_points'
+          color: 'oklch(99.5% 0.005 250)', weight: 2, opacity: 1, fillOpacity: 0.95, pane: 'pane_points'
         });
       },
-      onEachFeature: function (feature, layer) { layer.bindPopup(buildPopup(feature.properties)); }
+      onEachFeature: function (feature, layer) {
+        var p = feature.properties;
+        layer.bindPopup(featurePopup(feature, groupName));
+        var tip = p.RAWAN ? 'Rawan ' + p.RAWAN : (p.NAMA || p['RT/RW'] || groupName);
+        layer.bindTooltip(tip, { direction: 'top', offset: [0, -6] });
+        layer.on('mouseover', function() { if (layer.openPopup) layer.openPopup(); });
+      }
     });
   }
 
-  var layers = {
-    'KantorPemerintahan': { name: 'Kantor Pemerintahan', color: '#0f172a', layer: createPointLayer(json_KantorPemerintahan_11, '#0f172a', 6).addTo(map) },
-    'Sekolah': { name: 'Sekolah', color: '#2563eb', layer: createPointLayer(json_Sekolah_10, '#2563eb', 5).addTo(map) },
-    'TempatIbadah': { name: 'Tempat Ibadah', color: '#16a34a', layer: createPointLayer(json_TempatIbadah_9, '#16a34a', 5).addTo(map) },
-    'BalaiDesa': { name: 'Balai Desa', color: '#d97706', layer: createPointLayer(json_BalaiDesa_8, '#d97706', 7).addTo(map) },
-    'Lapangan': { name: 'Lapangan', color: '#84cc16', layer: createPointLayer(json_Lapangan_7, '#84cc16', 5).addTo(map) },
-    'Ponkesdes': { name: 'Ponkesdes', color: '#dc2626', layer: createPointLayer(json_Ponkesdes_6, '#dc2626', 6).addTo(map) },
-    'TPU': { name: 'TPU', color: '#9333ea', layer: createPointLayer(json_TPU_5, '#9333ea', 5).addTo(map) },
-    'DaerahRawanBencana': { name: 'Daerah Rawan Bencana', color: '#e11d48', layer: createPointLayer(json_DaerahRawanBencana_4, '#e11d48', 6).addTo(map) },
-    'Poskamling': { name: 'Poskamling', color: '#475569', layer: createPointLayer(json_Poskamling_3, '#475569', 4).addTo(map) },
-    'Jalan': { name: 'Jaringan Jalan', color: '#64748b', layer: layer_Jalan_2 },
-    'BatasDesa': { name: 'Batas Wilayah Desa', color: '#0f766e', layer: layer_ngasem_1 }
+  var C = {
+    gov: 'oklch(16% 0.014 262)', school: 'oklch(52% 0.17 250)', worship: 'oklch(50% 0.12 150)',
+    hall: 'oklch(70% 0.15 70)', field: 'oklch(64% 0.15 128)', health: 'oklch(52% 0.19 27)',
+    grave: 'oklch(45% 0.10 305)', hazard: 'oklch(58% 0.21 35)', nightwatch: 'oklch(47% 0.016 260)',
+    road: 'oklch(47% 0.016 260)', boundary: 'oklch(51% 0.22 264)'
   };
 
-  // Render Sidebar Layer Controls
-  var listEl = document.getElementById('layerList');
-  for (var key in layers) {
-    (function(k) {
-      var item = layers[k];
-      var div = document.createElement('div');
-      div.className = 'layer-item active';
-      div.innerHTML = '<div class="layer-left"><span style="width:10px;height:10px;border-radius:50%;background:' + item.color + ';display:inline-block"></span>' + item.name + '</div><input type="checkbox" checked>';
-      div.onclick = function() {
-        div.classList.toggle('active');
-        if (map.hasLayer(item.layer)) {
-          map.removeLayer(item.layer);
-        } else {
-          map.addLayer(item.layer);
-        }
-      };
-      listEl.appendChild(div);
-    })(key);
+  var layers = {
+    'KantorPemerintahan': { name: 'Kantor Pemerintahan', color: C.gov, layer: createPointLayer(json_KantorPemerintahan_11, C.gov, 6, 'Kantor Kepala Desa').addTo(map) },
+    'Sekolah': { name: 'Sekolah', color: C.school, layer: createPointLayer(json_Sekolah_10, C.school, 5, 'Sekolah').addTo(map) },
+    'TempatIbadah': { name: 'Tempat Ibadah', color: C.worship, layer: createPointLayer(json_TempatIbadah_9, C.worship, 5, 'Tempat Ibadah').addTo(map) },
+    'BalaiDesa': { name: 'Balai Desa', color: C.hall, layer: createPointLayer(json_BalaiDesa_8, C.hall, 7, 'Balai Desa').addTo(map) },
+    'Lapangan': { name: 'Lapangan', color: C.field, layer: createPointLayer(json_Lapangan_7, C.field, 5, 'Lapangan').addTo(map) },
+    'Ponkesdes': { name: 'Ponkesdes', color: C.health, layer: createPointLayer(json_Ponkesdes_6, C.health, 6, 'Ponkesdes').addTo(map) },
+    'TPU': { name: 'TPU', color: C.grave, layer: createPointLayer(json_TPU_5, C.grave, 5, 'TPU').addTo(map) },
+    'DaerahRawanBencana': { name: 'Daerah Rawan Bencana', color: C.hazard, layer: createPointLayer(json_DaerahRawanBencana_4, C.hazard, 6, 'Daerah Rawan Bencana').addTo(map) },
+    'Poskamling': { name: 'Poskamling', color: C.nightwatch, layer: createPointLayer(json_Poskamling_3, C.nightwatch, 4, 'Poskamling').addTo(map) },
+    'Jalan': { name: 'Jaringan Jalan', color: C.road, layer: layer_Jalan_2 },
+    'BatasDesa': { name: 'Batas Wilayah Desa', color: C.boundary, layer: layer_ngasem_1 }
+  };
+
+  window.layers = layers;
+  window.layer_Jalan_2 = layer_Jalan_2;
+  window.layer_ngasem_1 = layer_ngasem_1;
+
+  var counts = {};
+  Object.keys(layers).forEach(function(ck) {
+    var n = 0;
+    if (layers[ck].layer.eachLayer) layers[ck].layer.eachLayer(function() { n++; });
+    counts[ck] = n;
+  });
+
+  var roShown = document.getElementById('roShown');
+  var roShownLayers = document.getElementById('roShownLayers');
+  var roZoom = document.getElementById('roZoom');
+  var mastFigures = document.getElementById('mastFigures');
+  var runState = document.getElementById('runState');
+
+  var totalPoints = 0;
+  Object.keys(counts).forEach(function(k) { if (k !== 'Jalan' && k !== 'BatasDesa') totalPoints += counts[k]; });
+  mastFigures.dataset.count = totalPoints;
+  mastFigures.textContent = totalPoints;
+
+  function updateReadout() {
+    var shown = 0, active = 0;
+    Object.keys(layers).forEach(function(k) {
+      if (!map.hasLayer(layers[k].layer)) return;
+      active++;
+      if (k !== 'Jalan' && k !== 'BatasDesa') shown += counts[k];
+    });
+    roShown.textContent = shown;
+    roShownLayers.textContent = active;
+    roZoom.textContent = map.getZoom();
+    runState.textContent = active + ' dari ' + Object.keys(layers).length + ' layer ditampilkan';
   }
 
-  // Filter input simple pan
-  document.getElementById('filterInput').addEventListener('input', function(e) {
-    var q = e.target.value.toLowerCase();
-    for (var k in layers) {
-      var lyr = layers[k].layer;
-      if (lyr.eachLayer) {
-        lyr.eachLayer(function(l) {
-          var matched = false;
-          if (l.feature && l.feature.properties) {
-            for (var p in l.feature.properties) {
-              if (String(l.feature.properties[p]).toLowerCase().indexOf(q) > -1) {
-                matched = true;
-                break;
-              }
-            }
-          }
-          if (q === '' || matched) {
-            l.setOpacity ? l.setOpacity(1) : (l.setStyle && l.setStyle({opacity: 1, fillOpacity: 0.9}));
-          } else {
-            l.setOpacity ? l.setOpacity(0.1) : (l.setStyle && l.setStyle({opacity: 0.1, fillOpacity: 0.1}));
-          }
-        });
-      }
+  var listEl = document.getElementById('layerList');
+  document.getElementById('layerCount').textContent = Object.keys(layers).length + ' grup';
+
+  function toggleLayer(k) {
+    var item = layers[k];
+    var row = document.querySelector('.layer-row[data-layer="' + k + '"]');
+    var on = !map.hasLayer(item.layer);
+    if (on) map.addLayer(item.layer); else map.removeLayer(item.layer);
+    if (row) {
+      row.setAttribute('aria-pressed', on ? 'true' : 'false');
+      var st = row.querySelector('.layer-state');
+      if (st) st.textContent = on ? 'tampil' : 'sembunyi';
     }
+    var box = document.querySelector('#layerSwitches input[data-layer="' + k + '"]');
+    if (box) box.checked = on;
+    updateReadout();
+  }
+
+  Object.keys(layers).forEach(function(k) {
+    var item = layers[k];
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'layer-row';
+    btn.dataset.layer = k;
+    btn.setAttribute('aria-pressed', 'true');
+    btn.setAttribute('data-hook', 'layer');
+    btn.innerHTML = '<span class="swatch" style="background:' + item.color + '" aria-hidden="true"></span>' +
+      '<span class="layer-name">' + item.name + '</span>' +
+      '<span class="layer-count"><span class="layer-state">tampil</span> <span class="layer-num">' + counts[k] + '</span></span>';
+    btn.addEventListener('click', function() { toggleLayer(k); });
+    listEl.appendChild(btn);
+  });
+
+  // the ten per-layer checkboxes the first build queried: one per point layer, mirroring the row
+  var switchBox = document.getElementById('layerSwitches');
+  Object.keys(layers).forEach(function(k) {
+    if (k === 'BatasDesa') return;
+    var box = document.createElement('input');
+    box.type = 'checkbox'; box.checked = true; box.dataset.layer = k;
+    box.setAttribute('aria-label', layers[k].name);
+    box.id = 'sw-' + k;
+    box.addEventListener('change', function() {
+      var item = layers[k].layer, row = document.querySelector('.layer-row[data-layer="' + k + '"]');
+      if (box.checked) map.addLayer(item); else map.removeLayer(item);
+      if (row) {
+        row.setAttribute('aria-pressed', box.checked ? 'true' : 'false');
+        var st = row.querySelector('.layer-state');
+        if (st) st.textContent = box.checked ? 'tampil' : 'sembunyi';
+      }
+      updateReadout();
+    });
+    switchBox.appendChild(box);
+  });
+  window.layerSwitches = switchBox;
+
+  map.on('zoomend moveend', updateReadout);
+  updateReadout();
+
+  // the show-all box: on sets every layer visible, off hides them; the rows stay the per-layer switch
+  var showAll = document.getElementById('showAll');
+  showAll.addEventListener('change', function() {
+    Object.keys(layers).forEach(function(k) {
+      var item = layers[k].layer, row = document.querySelector('.layer-row[data-layer="' + k + '"]');
+      if (showAll.checked) map.addLayer(item); else map.removeLayer(item);
+      if (row) {
+        row.setAttribute('aria-pressed', showAll.checked ? 'true' : 'false');
+        var st = row.querySelector('.layer-state');
+        if (st) st.textContent = showAll.checked ? 'tampil' : 'sembunyi';
+      }
+      var box = document.querySelector('#layerSwitches input[data-layer="' + k + '"]');
+      if (box) box.checked = showAll.checked;
+    });
+    updateReadout();
+  });
+
+  var filterInput = document.getElementById('filterInput');
+  var searchStatus = document.getElementById('searchStatus');
+
+  filterInput.addEventListener('input', function(e) {
+    var q = e.target.value.trim().toLowerCase();
+    var matchedTotal = 0;
+    Object.keys(layers).forEach(function(k) {
+      var lyr = layers[k].layer;
+      if (!lyr.eachLayer || k === 'Jalan' || k === 'BatasDesa') return;
+      lyr.eachLayer(function(l) {
+        var matched = false;
+        if (l.feature && l.feature.properties) {
+          for (var p in l.feature.properties) {
+            if (String(l.feature.properties[p]).toLowerCase().indexOf(q) > -1) { matched = true; break; }
+          }
+        }
+        if (q === '' || matched) {
+          if (q !== '') matchedTotal++;
+          if (l.setStyle) l.setStyle({ opacity: 1, fillOpacity: 0.95 });
+        } else {
+          if (l.setStyle) l.setStyle({ opacity: 0.12, fillOpacity: 0.12 });
+        }
+      });
+    });
+    searchStatus.textContent = q === ''
+      ? ''
+      : matchedTotal + ' dari ' + totalPoints + ' fasilitas cocok dengan "' + q + '"';
   });
 </script>
 
